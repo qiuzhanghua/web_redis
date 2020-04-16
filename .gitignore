@@ -1,0 +1,4 @@
+/target
+.idea
+web_redis.iml
+Cargo.lock
