@@ -1,4 +1,4 @@
-# web_rust
+# web_redis
 
 ```bash
 cargo run
