@@ -16,6 +16,9 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     HttpServer::new(move || App::new().service(web::resource("/").route(web::get().to(index))))
+        // .keep_alive(actix_http::KeepAlive::Os)
+        // .shutdown_timeout(30)
+        // .maxconn(50000)
         .bind("0.0.0.0:8080")?
         .run()
         .await
@@ -44,7 +47,7 @@ pub async fn index(_request: HttpRequest) -> impl Responder {
 //     pool.get().unwrap()
 // }
 
-pub const REDIS_POOL_SIZE: u32 = 64;
+pub const REDIS_POOL_SIZE: u32 = 200;
 
 lazy_static! {
     pub static ref REDIS_POOL: Pool<r2d2_redis::RedisConnectionManager> = {
