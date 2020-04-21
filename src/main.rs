@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     HttpServer::new(move || App::new().service(web::resource("/").route(web::get().to(index))))
-        // .keep_alive(actix_http::KeepAlive::Os)
+        .keep_alive(actix_http::KeepAlive::Os)
         // .shutdown_timeout(30)
         // .maxconn(50000)
         .bind("0.0.0.0:8080")?
@@ -28,13 +28,14 @@ pub async fn index(_request: HttpRequest) -> impl Responder {
     use r2d2_redis::redis::Commands;
     use std::collections::HashMap;
     let mut conn = get_redis_connection();
-//    conn.get::<&str, String>("key").unwrap()
+    // conn.get::<&str, String>("key").unwrap()
     let key = format!("{}:{}", "people", "834212ef-7022-459e-a281-16342addc1d0");
     let map = conn.hgetall::<&str, HashMap<String, String>>(&key);
     match map {
         Ok(m) => m.get("name").unwrap().clone(),
         _ => "Error".to_string(),
     }
+//     "redis"
 }
 
 // pub fn establish_redis_connection() -> PooledConnection<r2d2_redis::RedisConnectionManager> {
@@ -48,7 +49,7 @@ pub async fn index(_request: HttpRequest) -> impl Responder {
 //     pool.get().unwrap()
 // }
 
-pub const REDIS_POOL_SIZE: u32 = 200;
+pub const REDIS_POOL_SIZE: u32 = 100;
 
 lazy_static! {
     pub static ref REDIS_POOL: Pool<r2d2_redis::RedisConnectionManager> = {
