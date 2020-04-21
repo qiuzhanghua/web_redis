@@ -28,6 +28,7 @@ pub async fn index(_request: HttpRequest) -> impl Responder {
     use r2d2_redis::redis::Commands;
     use std::collections::HashMap;
     let mut conn = get_redis_connection();
+//    conn.get::<&str, String>("key").unwrap()
     let key = format!("{}:{}", "people", "834212ef-7022-459e-a281-16342addc1d0");
     let map = conn.hgetall::<&str, HashMap<String, String>>(&key);
     match map {
