@@ -16,16 +16,11 @@ async fn main() -> std::io::Result<()> {
     let pool = RedisPool::new(
         bb8::Pool::builder()
             .max_size(REDIS_POOL_SIZE)
+            .min_idle(Some(REDIS_POOL_SIZE - 2))
             .build(manager)
             .await
             .unwrap(),
     );
-
-    // let p = pool.clone();
-    // let mut conn = p.get().await.unwrap();
-    // let conn = conn.as_mut().unwrap();
-    // let reply: String = cmd("PING").query_async(conn).await.unwrap();
-    // assert_eq!("PONG", reply);
 
     HttpServer::new(move || {
         App::new()
@@ -43,17 +38,10 @@ async fn main() -> std::io::Result<()> {
 pub async fn index(_request: HttpRequest, redis: web::Data<RedisPool>) -> std::io::Result<String> {
     let mut conn = redis.get().await.unwrap();
     let conn = conn.as_mut().unwrap();
-
-    //  let client = redis::Client::open("redis://localhost/0").unwrap();
-    //
-    // client.get_multiplexed_async_connection();
-    // let mut conn = client.get_async_connection().await.unwrap();
     let result = redis::cmd("GET")
         .arg(&["key"])
         .query_async(conn)
         .await
         .unwrap();
     Ok(result)
-    // // let x = conn.get::<&str, &str>("key").await.unwrap();
-    // Ok("redis".to_string())
 }
